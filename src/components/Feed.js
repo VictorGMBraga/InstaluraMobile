@@ -6,7 +6,6 @@ import Post from './Post';
 export default class Feed extends Component {
 
     constructor() {
-
         super();
         this.state = {
             fotos: []
@@ -14,14 +13,19 @@ export default class Feed extends Component {
     }
 
     componentDidMount() {
+        //fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
+        //    .then(resposta => resposta.json())
+        //    .then(json => this.setState({fotos: json}));
+        this.apiFetch();
+    }
 
-        fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael')
-            .then(resposta => resposta.json())
-            .then(json => this.setState({fotos: json}));
+    async apiFetch() {
+        const resposta = await fetch('https://instalura-api.herokuapp.com/api/public/fotos/rafael');
+        const json = await resposta.json();
+        this.setState({fotos: json});
     }
 
     render() {
-
         return (
             <FlatList style={styles.container}
                 keyExtractor={item => String(item.id)}
