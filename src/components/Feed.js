@@ -25,8 +25,16 @@ export default class Feed extends Component {
         this.setState({fotos: json});
     }
 
+    buscaPorId = idFoto => this.state.fotos.find(foto => foto.id === idFoto);
+
+    atualizaFotos = fotoAtualizada => {
+        const fotos = this.state.fotos
+            .map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto);
+        this.setState({fotos});
+    }
+
     like = idFoto => {
-        const foto = this.state.fotos.find(foto => foto.id === idFoto);
+        const foto = this.buscaPorId(idFoto);
 
         let novaLista = [];
         if(!foto.likeada) {
@@ -46,10 +54,28 @@ export default class Feed extends Component {
             likers: novaLista,
         }
         
-        const fotos = this.state.fotos
-            .map(foto => foto.id === fotoAtualizada.id ? fotoAtualizada : foto);
+        this.atualizaFotos(fotoAtualizada);
+    }
 
-        this.setState({fotos});
+    adicionaComentario = (idFoto, valorComentario, inputComentario) => {
+        if (valorComentario === '')
+            return;
+
+        const foto = this.buscaPorId(idFoto);
+
+        const novaLista = [...foto.comentarios, {
+            id: valorComentario,
+            login: 'meuUsuario',
+            texto: valorComentario,
+        }];
+
+        const fotoAtualizada = {
+            ...foto,
+            comentarios: novaLista,
+        }
+
+        this.atualizaFotos(fotoAtualizada);
+        inputComentario.clear();
     }
 
     render() {
@@ -58,7 +84,9 @@ export default class Feed extends Component {
                 keyExtractor={item => String(item.id)}
                 data={this.state.fotos}
                 renderItem={ ({item}) =>
-                    <Post foto={item} likeCallback={this.like} />
+                    <Post foto={item}
+                        likeCallback={this.like}
+                        comentarioCallback={this.adicionaComentario} />
                 }
             />
         );
