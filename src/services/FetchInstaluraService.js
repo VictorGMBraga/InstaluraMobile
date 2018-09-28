@@ -5,27 +5,12 @@ import {
 } from 'react-native';
 
 export default class InstaluraFetchService {
-    static get(recurso) {
-        const uri = 'https://instalura-api.herokuapp.com/api' + recurso;
-        const jsonPromisse = AsyncStorage.getItem('token')
-            .then(token => {
-                return {
-                    headers: new Headers({
-                        "X-AUTH-TOKEN": token
-                    })
-                }
-            })
-            .then(requestInfo => fetch(uri, requestInfo))
-            .then(resposta => resposta.json());
-        return jsonPromisse;
-    }
-
-    static post(recurso, dados) {
+    static request(recurso, method = 'GET', dados) {
         const uri = 'https://instalura-api.herokuapp.com/api' + recurso;
         return AsyncStorage.getItem('token')
             .then(token => {
                 return {
-                    method: 'POST',
+                    method,
                     body: JSON.stringify(dados),
                     headers: new Headers({
                         "Content-type": "application/json",
@@ -35,5 +20,13 @@ export default class InstaluraFetchService {
             })
             .then(requestInfo => fetch(uri, requestInfo))
             .then(resposta => resposta.json());
+    }
+
+    static get(recurso) {
+        return InstaluraFetchService.request(recurso);
+    }
+
+    static post(recurso, dados) {
+        return InstaluraFetchService.request(recurso, 'POST', dados);
     }
 }
